@@ -90,7 +90,7 @@
 					v-model="cssSnippet"
 					style="cursor:-webkit-grab; white-space: pre-wrap; height: auto;"
 					onfocus="this.select();"
-					rows="14"
+					rows="18"
 				>
 				</textarea>
 			</div>
@@ -233,8 +233,12 @@ export default {
 			return (
 				`.container {\n`+
 				`\tdisplay: grid;\n`+
+				`\tdisplay: -ms-grid;\n`+
 				`\tgrid-template-rows: ${this.containerStyle['grid-template-rows']};\n`+
 				`\tgrid-template-columns: ${this.containerStyle['grid-template-columns']};\n`+
+				`\t-ms-grid-rows: ${this.containerStyle['grid-template-rows']};\n`+
+				`\t-ms-grid-columns: ${this.containerStyle['grid-template-columns']};\n`+
+				`\t/* IE does not support grid-row-gap and grid-column-gap */\n`+
 				`\tgrid-row-gap: ${this.containerStyle['grid-row-gap']};\n`+
 				`\tgrid-column-gap: ${this.containerStyle['grid-column-gap']};\n`+
 				`\t/* Change the following styles accoding to your requirements */\n`+
