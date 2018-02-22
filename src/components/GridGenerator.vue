@@ -11,7 +11,7 @@
 					v-model="cols[colIndex]"
 					@change="(val) => {
 						if (!val.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
-						changeContainerStyle('grid-template-columns', cols.join(' '))
+						setContainerStyle('grid-template-columns', cols.join(' '))
 					}"
 				></GridGeneratorStyleInput>
 			</div>
@@ -25,7 +25,7 @@
 					v-model="rows[rowIndex]"
 					@change="(val) => {
 						if (!val.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
-						changeContainerStyle('grid-template-rows', rows.join(' '))
+						setContainerStyle('grid-template-rows', rows.join(' '))
 					}"
 				></GridGeneratorStyleInput>
 			</div>
@@ -127,37 +127,47 @@ export default {
   methods: {
     add(type) {
       if (type === 'rect') {
-        this.rects.push({
-          style: {
-            width: '1fr',
-            height: '1fr',
-          }
-        })
+        this.rects = [
+					...this.rects,
+					{
+						style: {
+							width: '1fr',
+							height: '1fr',
+						}
+					}
+				]
       } else if (type === 'row') {
-				this.rows.push('1fr')
+				this.rows = [
+					...this.rows,
+					'1fr',
+				]
       } else if (type === 'col') {
-				this.cols.push('1fr')
+				this.cols = [
+					...this.cols,
+					'1fr',
+				]
       }
     },
     remove(type) {
       if (this[`${type}Num`] === 0) return 
 			this[`${type}s`] = this[`${type}s`].slice(0, -1)
     },
-    changeContainerStyle(key, value) {
+    setContainerStyle(key, value) {
 			this.containerStyle[key] = value
 			this.$forceUpdate()
 		},
+
 		// rectStyleChanged(rectIndex, key, value) {
 		// 	if (!value.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
 		// 	const targetIndex = (rectIndex+1)%this.colNum - 1
 		// 	if (key === 'height') {
 		// 		let val = this.containerStyle['grid-template-columns'].split(' ')
 		// 		val[targetIndex] = value
-    //     this.changeContainerStyle('grid-template-columns', val.join(' '))
+    //     this.setContainerStyle('grid-template-columns', val.join(' '))
 		// 	} else if (key === 'width') {
 		// 		let val = this.containerStyle['grid-template-rows'].split(' ')
 		// 		val[targetIndex] = value
-		// 		this.changeContainerStyle('grid-template-rows', val.join(' '))
+		// 		this.setContainerStyle('grid-template-rows', val.join(' '))
 		// 	}
 		// }
   },
@@ -180,47 +190,28 @@ export default {
 	watch: {
 		rowGapWidth(value) {
 			if (!value.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
-			this.changeContainerStyle('grid-row-gap', value)
+			this.setContainerStyle('grid-row-gap', value)
 		},
 		colGapWidth(value) {
 			if (!value.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
-			this.changeContainerStyle('grid-column-gap', value)
+			this.setContainerStyle('grid-column-gap', value)
 		},
+		rows(value) {
+			this.setContainerStyle('grid-template-rows', value.join(' '))	
+		},
+		cols(value) {
+			this.setContainerStyle('grid-template-columns', value.join(' '))	
+		}
 	},
   computed: {
     rectNum() {
       return this.rects.length
 		},
 		rowNum() {
-			const rowLength = this.rows.length
-			let val = this.containerStyle['grid-template-rows'].split(' ')
-			const valLength = val.length
-			if (rowLength > valLength) {
-				val = [
-					...val,
-					...Array(rowLength - valLength).fill('1fr'),
-				]
-			} else if (rowLength < valLength) {
-				val = val.slice(0, -(valLength - rowLength))
-			}
-			console.log(val.join(' '))
-			this.changeContainerStyle('grid-template-rows', val.join(' '))	
-			return rowLength
+			return this.rows.length
 		},
 		colNum() {
-			const colLength = this.cols.length
-			let val = this.containerStyle['grid-template-columns'].split(' ')
-			const valLength = val.length
-			if (colLength > valLength) {
-				val = [
-					...val,
-					...Array(colLength - valLength).fill('1fr'),
-				]
-			} else if (colLength < valLength) {
-				val = val.slice(0, -(valLength - colLength))
-			}
-			this.changeContainerStyle('grid-template-columns', val.join(' '))	
-			return colLength
+			return this.cols.length
 		},
 		htmlSnippet() {
 			return (
