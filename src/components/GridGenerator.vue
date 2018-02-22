@@ -142,11 +142,7 @@ export default {
     },
     remove(type) {
       if (this[`${type}Num`] === 0) return 
-      if (type === 'rect') {
-        this.rects = this.rects.slice(0, -1)
-      } else {
-        this[`${type}Num`] -= 1
-      }
+			this[`${type}s`] = this[`${type}s`].slice(0, -1)
       this.changeContainerStyle()
     },
     changeContainerStyle(key, value) {
