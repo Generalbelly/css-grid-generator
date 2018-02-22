@@ -138,35 +138,14 @@ export default {
       } else if (type === 'col') {
 				this.cols.push('1fr')
       }
-      this.changeContainerStyle()
     },
     remove(type) {
       if (this[`${type}Num`] === 0) return 
 			this[`${type}s`] = this[`${type}s`].slice(0, -1)
-      this.changeContainerStyle()
     },
     changeContainerStyle(key, value) {
-      if (key) {
-				console.log(key);
-				console.log(value);
-				this.containerStyle[key] = value
-				this.$forceUpdate()
-      } else {
-        if (this.rowNum > 0) {
-					let val = this.containerStyle['grid-template-rows'].split(' ')
-					for (var i = 0; i < (this.rowNum - val.length + 1); i++) {
-						val.push('1fr')
-					}
-          this.containerStyle['grid-template-rows'] = val.join(' ') 
-        }
-				if (this.colNum > 0) {
-					let val = this.containerStyle['grid-template-columns'].split(' ')
-					for (var j = 0; j < (this.colNum - val.length + 1); j++) {
-						val.push('1fr')
-					}
-          this.containerStyle['grid-template-columns'] = val.join(' ')
-        }
-      }
+			this.containerStyle[key] = value
+			this.$forceUpdate()
 		},
 		// rectStyleChanged(rectIndex, key, value) {
 		// 	if (!value.match(/(px|%|vw|vh|fr|em|rem|ch|ex|cm|mm|in|pt|pc)$/)) return
@@ -213,10 +192,35 @@ export default {
       return this.rects.length
 		},
 		rowNum() {
-			return this.rows.length
+			const rowLength = this.rows.length
+			let val = this.containerStyle['grid-template-rows'].split(' ')
+			const valLength = val.length
+			if (rowLength > valLength) {
+				val = [
+					...val,
+					...Array(rowLength - valLength).fill('1fr'),
+				]
+			} else if (rowLength < valLength) {
+				val = val.slice(0, -(valLength - rowLength))
+			}
+			console.log(val.join(' '))
+			this.changeContainerStyle('grid-template-rows', val.join(' '))	
+			return rowLength
 		},
 		colNum() {
-			return this.cols.length
+			const colLength = this.cols.length
+			let val = this.containerStyle['grid-template-columns'].split(' ')
+			const valLength = val.length
+			if (colLength > valLength) {
+				val = [
+					...val,
+					...Array(colLength - valLength).fill('1fr'),
+				]
+			} else if (colLength < valLength) {
+				val = val.slice(0, -(valLength - colLength))
+			}
+			this.changeContainerStyle('grid-template-columns', val.join(' '))	
+			return colLength
 		},
 		htmlSnippet() {
 			return (
